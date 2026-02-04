@@ -1,18 +1,15 @@
 import turtle
 
-# ---------------- Screen ----------------
 screen = turtle.Screen()
 screen.title("Magic bricks")
 screen.setup(800, 700)
-screen.bgcolor("#87CEEB")  # sky blue
+screen.bgcolor("#87CEEB")
 
-# ---------------- Background Drawing ----------------
 bg = turtle.Turtle()
 bg.hideturtle()
 bg.speed(0)
 bg.penup()
 
-# Ground
 bg.goto(-400, -350)
 bg.color("#228B22")
 bg.begin_fill()
@@ -23,7 +20,6 @@ for _ in range(2):
     bg.left(90)
 bg.end_fill()
 
-# Boundary
 bg.goto(-350, -300)
 bg.color("white")
 bg.pensize(3)
@@ -35,7 +31,6 @@ for _ in range(2):
     bg.left(90)
 bg.penup()
 
-# ---------------- Paddle ----------------
 paddle = turtle.Turtle()
 paddle.shape("square")
 paddle.color("white")
@@ -43,7 +38,6 @@ paddle.shapesize(stretch_wid=1, stretch_len=6)
 paddle.penup()
 paddle.goto(0, -260)
 
-# ---------------- Ball ----------------
 ball = turtle.Turtle()
 ball.shape("circle")
 ball.color("red")
@@ -53,7 +47,6 @@ ball.goto(0, -230)
 ball_dx = 4
 ball_dy = 4
 
-# ---------------- Bricks ----------------
 bricks = []
 colors = ["#FF6347", "#FFD700", "#1E90FF"]
 
@@ -69,7 +62,6 @@ for row in range(3):
         bricks.append(brick)
     y -= 40
 
-# ---------------- Score ----------------
 score = 0
 score_pen = turtle.Turtle()
 score_pen.hideturtle()
@@ -78,14 +70,12 @@ score_pen.penup()
 score_pen.goto(-370, 310)
 score_pen.write("Score: 0", font=("Arial", 14, "bold"))
 
-# ---------------- Message ----------------
 msg = turtle.Turtle()
 msg.hideturtle()
 msg.color("black")
 msg.penup()
 msg.goto(0, 0)
 
-# ---------------- Retry Button ----------------
 button = turtle.Turtle()
 button.shape("square")
 button.color("#FFA500")
@@ -98,7 +88,6 @@ btn_text = turtle.Turtle()
 btn_text.hideturtle()
 btn_text.penup()
 
-# ---------------- Paddle Movement ----------------
 def move_left():
     global ball_dy
     if ball_dy < 0:
@@ -109,7 +98,6 @@ def move_right():
     if ball_dy < 0:
         paddle.setx(paddle.xcor() + 40)
 
-# ---------------- Game Functions ----------------
 def show_retry():
     button.showturtle()
     btn_text.goto(-55, -55)
@@ -120,22 +108,17 @@ def reset_game():
     msg.clear()
     btn_text.clear()
     button.hideturtle()
-
     score = 0
     score_pen.clear()
     score_pen.write("Score: 0", font=("Arial", 14, "bold"))
-
     ball.goto(0, -230)
     ball_dx = 4
     ball_dy = 4
-
     for brick in bricks:
         brick.showturtle()
-
     game_loop()
 
 def check_win():
-    # If all bricks are hidden → win
     for brick in bricks:
         if brick.isvisible():
             return False
@@ -143,23 +126,19 @@ def check_win():
 
 def game_loop():
     global ball_dx, ball_dy, score
-
     while True:
         ball.setx(ball.xcor() + ball_dx)
         ball.sety(ball.ycor() + ball_dy)
 
-        # Wall collision
         if ball.xcor() > 340 or ball.xcor() < -340:
             ball_dx *= -1
 
         if ball.ycor() > 290:
             ball_dy *= -1
 
-        # Paddle collision
         if ball.distance(paddle) < 60 and ball.ycor() < -230:
             ball_dy *= -1
 
-        # Brick collision
         for brick in bricks:
             if brick.isvisible() and ball.distance(brick) < 50:
                 brick.hideturtle()
@@ -169,29 +148,24 @@ def game_loop():
                 score_pen.write(f"Score: {score}", font=("Arial", 14, "bold"))
                 break
 
-        # Check win condition
         if check_win():
             msg.write("🎉 YOU WON! 🎉", align="center", font=("Arial", 24, "bold"))
             show_retry()
             return
 
-        # Ball missed paddle → Game Over
         if ball.ycor() < -330:
             msg.write("GAME OVER", align="center", font=("Arial", 24, "bold"))
             show_retry()
             return
 
-# ---------------- Retry Click ----------------
 def retry_click(x, y):
     if -90 < x < 90 and -80 < y < 0:
         reset_game()
 
-# ---------------- Key Bindings ----------------
 screen.listen()
 screen.onkey(move_left, "Left")
 screen.onkey(move_right, "Right")
 screen.onclick(retry_click)
 
-# ---------------- Start ----------------
 reset_game()
 screen.mainloop()
